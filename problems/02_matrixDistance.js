@@ -46,6 +46,8 @@ function matrixDistance(matrix) {
 // Better. 
 // Compact and less complexity.
 function matrixDistanceCompact(matrix) {
+  
+  // Fetch all rows and columns indices from the "matrix" into zeroes array. 
   var result = [], zeroes = [].concat(...matrix.map((m,i) => {return m.map((n,j) => {return {"col": j, "row": i, "toConsider": n === 0};})}))
                  .filter(f => f["toConsider"] == true);
   matrix.forEach((m, i) => {
@@ -57,6 +59,8 @@ function matrixDistanceCompact(matrix) {
 
 function matrixDistanceCompactLessTime(matrix) {
   var zeroes = [], result = [];
+
+  // Fetch all rows and columns indices from the "matrix" into zeroes array. 
   matrix.forEach((m, i) => {
     m.forEach((n, j) => {
       if(n == 0) {
