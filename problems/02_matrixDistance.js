@@ -55,6 +55,23 @@ function matrixDistanceCompact(matrix) {
   return result;
 }
 
+function matrixDistanceCompactLessTime(matrix) {
+  var zeroes = [], result = [];
+  matrix.forEach((m, i) => {
+    m.forEach((n, j) => {
+      if(n == 0) {
+        zeroes.push({row: i, col: j});
+      }
+    });
+  });
+
+  matrix.forEach((m, i) => {
+    result.push(m.map((n,j) => (n == 0) ? 0 : Math.min(...zeroes.map(z => Math.abs((z["row"] - i)) + Math.abs((z["col"] - j))))));
+  });
+
+  return result;
+}
+
 var resultArray = [];
 inputs.forEach((element, i) => {
   var result = matrixDistance(element.test.matrix);
