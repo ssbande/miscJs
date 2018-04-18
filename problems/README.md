@@ -40,3 +40,30 @@ citations = [3, 0, 6, 1, 5]
 NOTE: if there are several possible values of h, the maximum one is taken as the h-index.
 
 <hr />
+
+###### 04.  2 Keys Keyboard
+**LEVEL - EASY** <br />
+Initially on a notepad, only one character 'A' is present. You can perform two operations on this notepad
+for each step: 
+* **Copy All**: You can copy all the characters present on the notepad (partial copy is not allowed).
+* **Paste**: You can paste the characters which are copied last time.
+
+Given a number 'n', you have to get exactly 'n' 'A's on the notepad by performing the minimum number of steps permitted. Output the minimum number of steps to get n 'A's.
+
+<hr /> 
+
+###### 05. Binary Tree Paths 
+**LEVEL - MEDIUM** <br />
+Given a binary tree, return all root-to-leaf paths. 
+For example, given a binary tree 
+``` javascript
+    1
+   / \
+  2   3
+  \
+   5
+``` 
+All root-to-leaf paths are: 
+["1->2->5", "1->3"]
+
+<hr /> 
