@@ -11,7 +11,6 @@
  * All root-to-leaf paths are: ["1->2->5", "1->3"]
  */
 
-
 // Definition of a binary tree node: 
 class TreeNode {
   constructor(val, left = null, right = null) {
@@ -19,18 +18,53 @@ class TreeNode {
     this.left = left; 
     this.right = right;
   }
+
+  get hasLeftChild() {
+    return this.left !== null;
+  }
+
+  get hasRightChild() {
+    return this.right !== null;
+  }
+
+  traverseNode(x, isLeft) {
+    var partVal = isLeft ? this.left.val : this.right.val
+    x.map((e, i) => { e.slice(-1).pop() == this.val ? x[i] = e.concat([partVal]) 
+      : (i === x.length - 1 ? x.push([this.val, partVal]) : e)
+    })
+
+    if(x.length === 0) {
+      x.push([this.val, partVal]);
+    }
+
+    return x;
+  }
 }
 
-
 var inputs = [
-  {test: new TreeNode(1, new TreeNode(2, null, new TreeNode(5)), new TreeNode(3)), res: ["1->2->5", "1->3"]}
+  {test: new TreeNode(1, new TreeNode(2, null, new TreeNode(4, new TreeNode(5))), new TreeNode(3, new TreeNode(6))), 
+    res: ["1->2->4->5", "1->3->6"]}
 ]
 
 // root is of TreeNode Type
 function binaryTreePaths(root) {
-  console.log(root);
-  console.log(root.right.val);
-  console.log(typeof(root));
+  var x = [];
+  getPathForNode(root, x);
+  var res = x.map(a => a.join("->"));
+  return res;
+}
+
+
+getPathForNode = (node, x) => {
+  if(node.hasLeftChild) {
+    x = node.traverseNode(x, true);
+    getPathForNode(node.left, x);
+  }
+
+  if(node.hasRightChild) {
+    x = node.traverseNode(x, false);
+    getPathForNode(node.right, x);
+  }
 }
 
 var resultArray = [];
