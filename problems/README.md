@@ -67,3 +67,16 @@ All root-to-leaf paths are:
 ["1->2->5", "1->3"]
 
 <hr /> 
+
+###### 06. Different ways to add paranthesis
+**LEVEL - MEDIUM** <br />
+Given a string of numbers and operators, return all possible results from computing all the 
+different possible ways to group numbers and operators. The valid operators are +, -, *.
+
+Example 1: 
+```javascript
+Input: 2-1-1
+((2 - 1) - 1) = 0
+(2 - (1 - 1)) = 2
+Output: [0,2]
+```
