@@ -8,19 +8,28 @@
 var inputs = [
   { test: [2, 2, 1], res: [2,2,2] },
   { test: [9], res: [1,0] },
+  { test: [1, 9], res: [2,0] },
   { test: [9, 9], res: [1,0,0] },
   { test: [6,1,4,5,3,9,0,1,9,5,1,8,6,7,0,5,5,4,3], res: [6,1,4,5,3,9,0,1,9,5,1,8,6,7,0,5,5,4,4] }
 ];
 
 function plusOne(digits) {
-  var str = ""
-  // digits.forEach(d => str += d.toString());
-  // console.log("str: ", str);
-  // console.log("parse str: ", parseFloat(str));
-  // var newStr = (parseInt(str) + 1).toString();
-  // console.log("newStr: ", (parseInt(str) + 1).toString())
-  // var newDigits = newStr.split('').map(s => parseInt(s));
-  // return newDigits;
+  checkNine(digits, digits.length - 1);
+  return digits;
+}
+
+function checkNine(digits, index) {
+  if(digits[index] != 9) {
+    digits[index]++;
+    return;
+  } else {
+    digits[index] = 0; // as digits[index] == 9;
+    if(index == 0 ){
+      digits.unshift(1);
+    } else {
+      return checkNine(digits, index - 1);
+    }
+  }
 }
 
 var results = [];
