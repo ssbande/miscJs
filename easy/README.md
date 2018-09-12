@@ -35,5 +35,10 @@ For example, given nums = [0, 1, 0, 3, 12]. after calling your function, nums sh
 Note:
   * You must do this in place without making a copy of the array.
   * Minimize the total number of operations.
+
+###### 08. Two Sum
+Given an array of integers, return indices of the two numbers such that they add up to a specific target. 
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+[2, 7, 11, 15] target = 9 return [0,1]
 <hr/>
 
