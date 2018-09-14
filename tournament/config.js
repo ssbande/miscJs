@@ -46,7 +46,11 @@ var config = {
     { name: 'Semi Finals', pCount: 4, limit: 2, knockOut: true, key: 'SF' },
     { name: 'Finals', pCount: 2, limit: 1, knockOut: true, key: 'FF' },
   ],
-  maxScore: 6
+  maxScore: 6,
+  nameRegex:'^(?![\s.]+$)[a-zA-Z\s]{3,10}$',
+  tournamentName: 'Bande',
+  playerNumber:5,
+  knockout:true
 };
 
 var schedule = {

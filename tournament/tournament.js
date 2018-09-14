@@ -1,4 +1,4 @@
-console.log('Tennis Tournament');
+console.log('Tennis Tournament', JSON.stringify(teamsX));
 
 let men = [], women = [], menDoubles = [], womenDoubles = [], mixDoubles = [];
 
@@ -279,7 +279,7 @@ function playMatchesDoubles(stageKey, type) {
       loser.points += 0;
     }
 
-    if(initialWinner == 'bye') {
+    if(initialWinner == 'bye') { 
       match[pW] = 'bye';
       match[pL + 'Score'] = winnerScore;
       match[pW + 'Score'] = 0;
