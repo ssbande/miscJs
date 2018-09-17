@@ -50,7 +50,7 @@ var config = {
   nameRegex:'^(?![\s.]+$)[a-zA-Z\s]{3,10}$',
   tournamentName: 'Bande',
   playerNumber:5,
-  knockout:true
+  isTournamentStarted: false
 };
 
 var schedule = {
@@ -106,3 +106,4 @@ function getMatchType(type, allSchedule) {
 
   return allSchedule[matchType];
 }
+

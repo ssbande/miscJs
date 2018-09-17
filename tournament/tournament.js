@@ -429,8 +429,8 @@ teams.forEach(team => {
   });
 })
 
-generateMatchSchedule(); // creates >> schedule
-createLinksAsPerMatches();
+// generateMatchSchedule(); // creates >> schedule
+// createLinksAsPerMatches();
 
 generateScheduleForSingles(men, 'menSingles');
 generateScheduleForSingles(women, 'womenSingles');

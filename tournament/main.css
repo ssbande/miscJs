@@ -1,5 +1,160 @@
+body {
+  font-family: 'Play', sans-serif;
+  font-weight: 100;
+}
+
+.tourName {
+  /* font-family: 'Almendra Display', cursive; */
+  /* font-size: 40px; */
+}
+
+.tourMenu {
+  font-family: 'Almendra Display', cursive;
+  padding-bottom: 5px;
+  color: #ffc107;
+  text-align: center;
+}
+
+.tourMenu > hr { 
+  border: 0; 
+  height: 1px; 
+  padding: 0;
+  margin: 7px 0;
+  background-image: -webkit-linear-gradient(left, #343a40, #ffc107, #343a40);
+  background-image: -moz-linear-gradient(left, #343a40, #ffc107, #343a40);
+  background-image: -ms-linear-gradient(left, #343a40, #ffc107, #343a40);
+  background-image: -o-linear-gradient(left, #343a40, #ffc107, #343a40); 
+}
+
+.bg1 {
+  /* #00b4db → #0083b0 
+  #da4453
+→ 
+#89216b
+
+#c94b4b
+→ 
+#4b134f
+*/
+  background-image: -webkit-linear-gradient(left, #00b4db, #0083b0);
+  background-image: -moz-linear-gradient(left, #00b4db, #0083b0);
+  background-image: -ms-linear-gradient(left, #00b4db, #0083b0);
+  background-image: -o-linear-gradient(left, #00b4db, #0083b0); 
+}
+
+.bg2 {
+  /*  #da4453 → #89216b */
+  background-image: -webkit-linear-gradient(left, #da4453, #89216b);
+  background-image: -moz-linear-gradient(left, #da4453, #89216b);
+  background-image: -ms-linear-gradient(left, #da4453, #89216b);
+  background-image: -o-linear-gradient(left, #da4453, #89216b); 
+}
+
+.bg3 {
+  /*  #c94b4b → #4b134f */
+  background-image: -webkit-linear-gradient(left, #c94b4b, #4b134f);
+  background-image: -moz-linear-gradient(left, #c94b4b, #4b134f);
+  background-image: -ms-linear-gradient(left, #c94b4b, #4b134f);
+  background-image: -o-linear-gradient(left, #c94b4b, #4b134f); 
+}
+
+.bg4 {
+  /* #8a2387 → #e94057 → #f27121*/
+  background-image: -webkit-linear-gradient(left, #f27121, #e94057, #8a2387);
+  background-image: -moz-linear-gradient(left, #f27121, #e94057, #8a2387);
+  background-image: -ms-linear-gradient(left, #f27121, #e94057, #8a2387);
+  background-image: -o-linear-gradient(left, #f27121, #e94057, #8a2387); 
+}
+
+.tourMenuLeft {
+  font-family: 'Almendra Display', cursive;
+  padding-bottom: 5px;
+  color: #ffc107;
+  text-align: left;
+}
+
+.tourMenuRight {
+  font-family: 'Almendra Display', cursive;
+  padding-bottom: 5px;
+  color: #ffc107;
+  text-align: right;
+}
+
+.tourMenuLeft > hr { 
+  border: 0; 
+  height: 1px; 
+  margin: 7px 0;
+  padding: 0;
+  background-image: -webkit-linear-gradient(left, #ffc107, #ffc107, #343a40);
+  background-image: -moz-linear-gradient(left, #ffc107, #ffc107, #343a40);
+  background-image: -ms-linear-gradient(left, #ffc107, #ffc107, #343a40);
+  background-image: -o-linear-gradient(left, #ffc107, #ffc107, #343a40); 
+}
+
+.tourMenuRight > hr { 
+  border: 0; 
+  height: 1px; 
+  padding: 0;
+  margin: 7px 0;
+  background-image: -webkit-linear-gradient(left, #343a40, #ffc107, #ffc107);
+  background-image: -moz-linear-gradient(left, #343a40, #ffc107, #ffc107);
+  background-image: -ms-linear-gradient(left, #343a40, #ffc107, #ffc107);
+  background-image: -o-linear-gradient(left, #343a40, #ffc107, #ffc107); 
+}
+
+.iconShadow {
+  font-size: 300px;
+  margin-top: 15px;
+  text-shadow: 1px 3px 4px black;
+  /* color: #343a40; */
+  color: #ffc107;
+}
+
+.icon-orange {
+  color: #6c757d;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.icon-orange:hover {
+  color: #ffc107;
+  text-shadow: 1px 3px 4px black;
+}
+
+.carContainer {
+  height: 500px; 
+  text-align: center; 
+  background: #343a40; 
+  border-radius: 6px;
+}
+
+.tHeader {
+  padding: 10px;
+  border-left: 5px solid #ffc107;
+  margin-bottom: 25px;
+}
+
+.a-mute {
+  color: #007bff !important;
+  text-decoration: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.a-mute:hover {
+  color: #0056b3 !important;
+}
+
+.genMsg {
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 1px dotted #343a40;
+}
+
+
 .text-orange {
-  color: #FF9C00;
+  /* color: #FF9C00; */
+  color: #ffc107
 }
 
 .settings {
@@ -10,11 +165,12 @@
 .darkBg {
   background-color: #183980;
 }
-/* 
-.btn-warning {
-  background-color: #FF9C00 ;
+
+a:hover {
+  text-decoration: none;
 }
- */
+
+
 
  .error {
    display:none;
@@ -88,6 +244,34 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+#back2Top {
+  width: 50px;
+  overflow: hidden;
+  z-index: 999;
+  display: none;
+  cursor: pointer;
+  position: fixed;
+  bottom: 50px;
+  right: 0;
+  background-color: black;
+  color: gray;
+  text-align: center;
+  text-decoration: none;
+  opacity:0.5;
+}
+
+#back2Top:hover {
+  opacity: 0.8;
+  color:white;
+}
+
+.editSubmitIcon{
+  cursor: pointer;
+}
+
+.editSubmitIcon:hover {
+  color: #ffc107;
+}
 
 
 
@@ -95,7 +279,9 @@ input:checked + .slider:before {
 
 
 
-
+.carousel-indicators .active {
+  background-color: #ffc107;
+}
 
 
 
