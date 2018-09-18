@@ -411,9 +411,12 @@ function createLinksAsPerMatches() {
     let k = conditions[key].toLowerCase() + 'Links';
     let method = key.includes('Double') ? 'playMatchesDoubles' : 'playMatchesSingles';
     // console.log('key: ', key, method)
+    let x = "";
     schedule[key].forEach(element => {
-      document.getElementById(k).innerHTML += '<a href="#" onclick="' + method + '(\'' + element.key.trim() + '\', \'' + conditions[key] + '\')">Play ' + element.name + '</a>'
+      x += '<a href="#" onclick="' + method + '(\'' + element.key.trim() + '\', \'' + conditions[key] + '\')">Play ' + element.name + '</a>'
     });
+
+    console.log(x);
   }
 }
 
@@ -429,8 +432,8 @@ teams.forEach(team => {
   });
 })
 
-// generateMatchSchedule(); // creates >> schedule
-// createLinksAsPerMatches();
+generateMatchSchedule(); // creates >> schedule
+createLinksAsPerMatches();
 
 generateScheduleForSingles(men, 'menSingles');
 generateScheduleForSingles(women, 'womenSingles');

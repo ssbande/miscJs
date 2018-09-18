@@ -50,7 +50,8 @@ var config = {
   nameRegex:'^(?![\s.]+$)[a-zA-Z\s]{3,10}$',
   tournamentName: 'Bande',
   playerNumber:5,
-  isTournamentStarted: false
+  isTournamentStarted: false,
+  isTournamentEnded: false
 };
 
 var schedule = {
@@ -75,6 +76,14 @@ var conditions = {
   menDoubles: 'DM',
   womenDoubles: 'DF',
   mixDoubles: 'MD'
+};
+
+var typeEnum = {
+  menSingles: 'Men Singles',
+  womenSingles: 'Women Singles',
+  menDoubles: 'Men Doubles',
+  womenDoubles: 'Women Doubles',
+  mixDoubles: 'Mix Doubles'
 };
 
 

@@ -87,7 +87,53 @@ const TeamMethods = {
 }
 
 const ScheduleMethods = {
+	totalMatches: 0,
+	showStageDetails: function showStageDetails(key, stage, stageName) {
+		$("#playOffTitle").html("");
+		$("#playOffTblBody").html("");
+		$("#playOffTitle").append("View Playoffs - ").append(key).append(" >> " + stageName);
+		console.log(schedule[key][stage].matches)
+		schedule[key][stage].matches.forEach((match, i) => {
+			let x = `<tr>
+				<td>${i+1}</td>
+				<td>${match.t1 === 'undefined' || match.t1< 0 ? '--' : match.t1}</td>
+				<td class="font-weight-bold text-orange">${match.p1}</td>
+				<td class="font-weight-bold">- Vs -</td>				
+				<td class="font-weight-bold text-orange">${match.p2}</td>
+				<td>${match.t2 === 'undefined' || match.t2 < 0 ? '--' : match.t2}</td>
+				<td class="text-orange">${match.won == "" ? '--' : match.won}</td>
+			</tr>`;
+			$("#playOffTblBody").append(x);
+		});
+	},
+	
+	createInfoRow: function createInfoRow(key) {
+		let objLen = Object.keys(schedule[key]).length;
+		let res = "";
+
+		if (objLen == 0) {
+			res += `No Matches for ${key}`;
+			return `<div class="row"><div class="col-sm-12">${res}</div></div>`;
+		}
+
+		for (const st in schedule[key]) {
+			res += `<div class="row">
+				<div class="col-sm-8 a-mute-orange" onClick="ScheduleMethods.showStageDetails('${key}', '${st}', '${schedule[key][st].name}')" data-toggle="modal" data-target="#stageDetails">${schedule[key][st].name}</div>
+				<div class="col-sm-4 text-right">${schedule[key][st].matchCount}</div>
+			</div>`
+		}
+
+		return res;
+	},
+
 	generateMatchSchedule: function generateMatchSchedule() {
+		if (teamsX.length == 0) {
+			console.log('no teams');
+			$("#scheduleGeneateError").html("There are no teams yet. Please access Menu for the same and then create schedule.").show();
+			return false;
+		}
+
+
 		config.isTournamentStarted = true;
 		$("#tStarted").show("slow");
 		$("#tNotStarted").hide("slow");
@@ -126,6 +172,24 @@ const ScheduleMethods = {
 		}
 
 		console.log('schedule from frontX: ', schedule);
+		let startDate = new Date(config.startDate);
+		let endDate = new Date(startDate);
+		endDate.setDate(endDate.getDate() + config.days);
+		let totalMatches = 0;
+		for (const mt in schedule) {
+			$(`#${mt}Info`).append(ScheduleMethods.createInfoRow(mt))
+			for (const st in schedule[mt]) {
+				totalMatches += schedule[mt][st].matchCount;
+			}
+		}
+
+		$("#tStartDate").html(startDate.toDateString());
+		$("#tEndDate").html(endDate.toDateString());
+		$("#tTeamNo").html(teamsX.length);
+		$("#tMatchNo").html(totalMatches);
+		$("#scheduleListInfo").show();
+		$("#scheduleListEmptyInfo").hide();
+		ScheduleMethods.totalMatches = totalMatches;
 	},
 
 	generateScheduleForSingles: function generateScheduleForSingles(players, keyName) {
@@ -147,6 +211,8 @@ const ScheduleMethods = {
 						p1: players[matchPlayers.p1].name,
 						p2: players[matchPlayers.p2].name,
 						won: players[matchPlayers.p1].name === 'bye' ? players[matchPlayers.p2].name : (players[matchPlayers.p2].name === 'bye' ? players[matchPlayers.p1].name : ''),
+						t1: players[matchPlayers.p1].teamName,
+						t2: players[matchPlayers.p2].teamName,
 						p1Score: 0,
 						p2Score: 0
 					})
@@ -163,6 +229,8 @@ const ScheduleMethods = {
 						p1: player1.name,
 						p2: player2.name,
 						won: player1.name === 'bye' ? player2.name : (player2.name === 'bye' ? player1.name : ''),
+						t1: player1.teamName,
+						t2: player2.teamName,
 						p1Score: 0,
 						p2Score: 0
 					});
@@ -177,7 +245,7 @@ const ScheduleMethods = {
 		const stage = config.stages.find(s => s.limit < players.length);
 		let matches = [];
 
-		// console.log(' doubles from gen schedule: ', keyName,  players);
+		// console.log(' doubles from gen schedule: ', keyName, stage);
 
 		if (stage.knockOut) {
 			if (players.length % 2 !== 0) {
@@ -189,6 +257,7 @@ const ScheduleMethods = {
 				let matchPlayers = getTwoRandomNos(players.length);
 				while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
 					let t1 = players[matchPlayers.p1], t2 = players[matchPlayers.p2];
+					console.log('t1: ', t1, ' t2: ', t2)
 					let firstPlayer = t1.name == 'bye' ? 'bye' : (
 						teamsX.find(f => f.team == t1.team)[keyName].find(p => p.bpName == t1.bpName).bpName);
 
@@ -199,6 +268,8 @@ const ScheduleMethods = {
 						p1: firstPlayer,
 						p2: secondPlayer,
 						won: firstPlayer === 'bye' ? secondPlayer : (secondPlayer === 'bye' ? firstPlayer : ''),
+						t1: t1.team,
+						t2: t2.team,
 						p1Score: 0,
 						p2Score: 0
 					})
@@ -216,8 +287,6 @@ const ScheduleMethods = {
 					let secondPlayer = teamsX.find(f => f.team == t2.team)[keyName]
 						.find(p => p.bpName == t2.bpName).bpName;
 
-					// console.log(' second: ', teamsX.find(f => f.team == t2.team)[keyName], ' t2: ', t2, ' secondPlayer: ', secondPlayer);
-					// console.log('i: ', i, ' t1: ', t1, ' firstPlayer: ', firstPlayer, ' t2: ', t2, ' secondPlayer: ', secondPlayer);
 					matches.push({
 						p1: firstPlayer,
 						p2: secondPlayer,
@@ -229,13 +298,323 @@ const ScheduleMethods = {
 			}
 		}
 
-		// allSchedule[keyName][stage.key] = {
-		// 	name: stage.name,
-		// 	key: stage.key,
-		// 	limit: stage.knockOut ? matches.length : stage.limit,
-		// 	matches
-		// };
 		schedule[keyName][stage.key]["matches"] = matches;
 	}
 }
 
+const PlayMethods = {
+	playAll: function playAll(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		// alert('play all matches here ... ');
+		config.isTournamentEnded = true;
+		// $("#tStarted").hide("slow");
+		$("#runAllMatches").hide("slow");
+		$("#tourProgress").show("slow");
+
+		// $("#tEnded").show("slow");
+
+		let allMatches = [];
+		for (const key in schedule) {
+			let keyName = typeEnum[key];
+			let keyShort = conditions[key];
+			let isSingle = key.includes('Singles');
+			for (const stage in schedule[key]) {
+				allMatches.push(Object.assign({}, schedule[key][stage], { matchTypeFull: keyName, matchType: keyShort, isSingle }));
+			}
+		}
+
+		for (let i = 0; i < allMatches.length; i++) {
+			let type = allMatches[i]
+			setTimeout(() => {
+				if (type.isSingle) {
+					PlayMethods.playMatchesSingles(type.key, type.matchType);
+				} else {
+					PlayMethods.playMatchesDoubles(type.key, type.matchType);
+				}
+
+				let percent = 100 / allMatches.length * (i + 1);
+				$("#tourProgress .progress-bar").css("width", percent + "%");
+				$("#tourProgressCaption").html(`Playing ${type.matchTypeFull} - ${type.name} + ${ScheduleMethods.totalMatches}`);
+
+				if (i == allMatches.length - 1) {
+					setTimeout(() => {
+						$("#tStarted").hide("slow");
+						$("#tEnded").show("slow");
+						$("#stats").show("slow");
+						Statistics.allTeams();
+						Statistics.generateMedalTally();
+					}, 2000);
+				}
+			}, 1000 * i);
+		}
+	},
+
+	playMatchesSingles: function playMatchesSingles(stageKey, type) {
+		let keyName = type == 'M' ? 'menSingles' : 'womenSingles';
+		let allPlayers = [];
+		teamsX.forEach(team => {
+			allPlayers = allPlayers.concat(team.players);
+		});
+
+		let matchType = getMatchType(type, schedule);
+
+		let matches = matchType[stageKey].matches, winners = [];
+		let stage = config.stages.find(s => s.key == stageKey);
+		matches.forEach((match, index) => {
+			let winIndex = Math.floor(Math.random() * 2);
+			let loseIndex = !winIndex | 0;
+			let pW = 'p' + (winIndex + 1), pL = 'p' + (loseIndex + 1);
+			if (!match.won) {
+				match.won = match[pW];
+			} else {
+				match[pW] = match.won;
+			}
+
+			let winnerScore = config.maxScore;
+			let loserScore = Math.floor(Math.random() * config.maxScore);
+
+			let winnerPresentIndex = winners.findIndex(a => a.name === match[pW]);
+			let winner = winnerPresentIndex > -1 ? winners[winnerPresentIndex] : allPlayers.find(a => a.name === match[pW]);
+			let loser = allPlayers.find(a => a.name === match[pL]);
+
+			winner.history.push({ stage: stageKey, against: match[pL], winStatus: 1, selfScore: winnerScore, rivalScore: loserScore });
+			winner.points = winner.points + 3;
+
+			if (winnerPresentIndex > -1) {
+				winners[winnerPresentIndex] = winner;
+				allPlayers.find(a => a.name === match[pW]).history.push({ stage: stageKey, against: match[pL], winStatus: 1, selfScore: winnerScore, rivalScore: loserScore });
+				allPlayers.find(a => a.name === match[pW]).points += 3;
+			} else {
+				winners.push(Object.assign({}, winner, { stage: stageKey }));
+			}
+
+			if (loser) {
+				loser.history.push({ stage: stageKey, against: match[pW], winStatus: 0, selfScore: loserScore, rivalScore: winnerScore });
+				loser.points += 0;
+			}
+
+			match[pW + 'Score'] = winnerScore;
+			match[pL + 'Score'] = loserScore;
+		});
+
+		let roundWinners = winners.map((w, i) => ({ id: i, name: w.name, points: w.points, history: w.history, sex: w.sex, team: w.team, playerId: w.playerId })).sort((x, y) => y.points - x.points).filter(f => f.id < stage.limit);
+
+		matchType[stageKey]['winners'] = roundWinners;
+		console.log('All Schedule after ', stageKey, schedule, teamsX);
+		if (stageKey !== 'FF') {
+			ScheduleMethods.generateScheduleForSingles(roundWinners, keyName)
+		}
+	},
+
+	playMatchesDoubles: function playMatchesDoubles(stageKey, type) {
+		let keyName = type == 'DM' ? 'menDoubles' : (type == 'DF' ? 'womenDoubles' : 'mixDoubles');
+		let allPlayers = [];
+		teamsX.forEach(team => {
+			allPlayers = allPlayers.concat(team[keyName]);
+		});
+
+
+		// console.log('allPlayers: ', allPlayers, type, keyName, allSchedule);
+		let matchType = getMatchType(type, schedule);
+		let matches = matchType[stageKey].matches, winners = [];
+		let stage = config.stages.find(s => s.key == stageKey);
+
+		matches.forEach((match, index) => {
+			let winIndex = Math.floor(Math.random() * 2);
+			let loseIndex = !winIndex | 0;
+
+			let pW = 'p' + (winIndex + 1), pL = 'p' + (loseIndex + 1);
+			let initialWinner = match[pW];
+			// console.log(' pw: ', pW, 'pL: ', pL, ' match[pW]: ', match[pW], ' match[pL]: ', match[pL]);
+
+			if (!match.won) {
+				match.won = match[pW];
+			} else {
+				if (match[pW] == 'bye') {
+					match[pW] = match[pL];
+				}
+				// match[pW] = match.won;
+			}
+
+			let winnerScore = config.maxScore;
+			let loserScore = Math.floor(Math.random() * config.maxScore);
+
+			let winnerPresentIndex = winners.findIndex(a => a.bpName === match[pW]);
+			let winner = winnerPresentIndex > -1 ? winners[winnerPresentIndex] : allPlayers.find(a => a.bpName === match[pW] || a.bpNameAlt === match[pW]);
+			let loser = allPlayers.find(a => a.bpName === match[pL] || a.bpNameAlt === match[pL]);
+
+			winner.history.push({ stage: stageKey, against: match[pL], winStatus: 1, selfScore: winnerScore, rivalScore: loserScore });
+			winner.points = winner.points + 3;
+
+			if (winnerPresentIndex > -1) {
+				winners[winnerPresentIndex] = winner;
+				allPlayers.find(a => a.bpName === match[pW] || a.bpNameAlt === match[pW]).history.push({ stage: stageKey, against: match[pL], winStatus: 1, selfScore: winnerScore, rivalScore: loserScore });
+				allPlayers.find(a => a.bpName === match[pW] || a.bpNameAlt === match[pW]).points += 3;
+			} else {
+				winners.push(Object.assign({}, winner, { stage: stageKey }));
+			}
+
+			if (loser) {
+				loser.history.push({ stage: stageKey, against: match[pW], winStatus: 0, selfScore: loserScore, rivalScore: winnerScore });
+				loser.points += 0;
+			}
+
+			if (initialWinner == 'bye') {
+				match[pW] = 'bye';
+				match[pL + 'Score'] = winnerScore;
+				match[pW + 'Score'] = 0;
+			} else {
+				match[pW + 'Score'] = winnerScore;
+				match[pL + 'Score'] = loserScore;
+			}
+		});
+
+		let roundWinners = winners.map((w, i) => ({
+			id: i,
+			bpName: w.bpName,
+			bpNameAlt: w.bpNameAlt,
+			points: w.points,
+			history: w.history,
+			team: w.team,
+			player1: w.player1,
+			player2: w.player2,
+			player1Name: w.player1Name,
+			player2Name: w.player2Name
+		}))
+			.sort((x, y) => y.points - x.points)
+			.filter(f => f.id < stage.limit);
+
+
+
+
+
+
+		// console.log(' roundWinners: ', roundWinners);
+
+
+		matchType[stageKey]['winners'] = roundWinners;
+		// console.log('Match Type: ', matchType, matchType[stageKey]);
+
+		console.log('All Schedule after ', stageKey, schedule, teamsX);
+		if (stageKey !== 'FF') {
+			ScheduleMethods.generateScheduleForDoubles(roundWinners, keyName)
+		}
+	}
+}
+
+const Statistics = {
+
+	allTeams: function () {
+		$("#statsListEmptyInfo").hide();
+		var options = {
+				title: 'Team Points',
+				subtitle: 'Teams stats for total points',
+			is3D: true,
+			pieSliceText: 'value',
+			pieStartAngle: 135,
+			tooltip: { text: 'value' },
+			pieHole: 0.2,
+			legend: {
+				width: "10%",
+				alignment: "center",
+				position: "bottom"
+			},
+			fontName: 'Almendra Display', fontSize: '16px',
+			backgroundColor: {
+				fill: "#343a40"
+			},
+			chartArea: { left: 30, top: 0, width: '90%', height: '90%'}
+		};
+		// Define the chart to be drawn.
+		// pie chart
+		console.log(google)
+		var data = new google.visualization.DataTable();
+		let dataX = teamsX.map(team => [team.team, team.players.reduce((sum, item) => sum + item.points, 0)])
+		data.addColumn('string', 'Team');
+		data.addColumn('number', 'Total Points');
+		data.addRows(dataX);
+		var chart = new google.visualization.PieChart(document.getElementById('myPieChart'));
+		chart.draw(data, options);
+
+		let actualData = teamsX.map(team =>  {
+			let history = [];
+			for(let i in team) {
+				if(team[i].length && typeof team[i] === "object") {
+					team[i].map(item=>{
+						history=[...history,...item.history]
+					})
+				}
+			}
+			return [team.team,
+				history.reduce((sum, item) =>item.winStatus===1?++sum:sum+=0, 0),
+			history.reduce((sum, item) => item.winStatus===0?++sum:sum+=0, 0)];
+		});	 
+			
+		// bar chart
+		var data1 = google.visualization.arrayToDataTable([
+			['Team', 'Wins', 'Looses'],
+			...actualData
+		]);
+	
+		var options1 = {
+			chart: {
+				title: 'Won Lost',
+				subtitle: 'Teams stats for won and lost matches',
+				
+			},
+			height: 500,
+			legend:{
+				position:"top",
+				alignment:"center"
+			},
+			legend: {
+				width: "10%",
+				alignment: "center",
+				position: "bottom"
+			},
+			chartArea: { left: 30, top: 0,height: '90%' }
+		};
+	
+		var chart1 = new google.charts.Bar(document.getElementById('myBarChart'));
+	
+		chart1.draw(data1, google.charts.Bar.convertOptions(options1));
+        
+      
+	},
+
+	createWinnerAndRunnerUpRow: function createWinnerAndRunnerUpRow(key) {
+		let objLen = Object.keys(schedule[key]).length;
+		let res = "";
+
+		if (objLen == 0) {
+			res += `No Matches for ${key}`;
+			return `<li class="list-group-item list-group-item-light">${res}</li>`;
+		}
+
+		let finals = schedule[key]["FF"];
+		if(finals) {
+			let final = finals.matches[0];
+			let winner = final.won;
+			let runnerUp = final.won == final.p1 ? final.p2 : final.p1;
+			res+=`<li class="list-group-item list-group-item-light">
+			<i class="fas fa-trophy text-orange"></i> ${winner}</li>
+		<li class="list-group-item list-group-item-light">${runnerUp}</li>`
+		}
+
+		return res;
+	},
+
+	generateMedalTally: function generateMedalTally() {
+		$("#medalListEmptyInfo").hide();
+		$("#medalListInfo").show();
+
+		for (const mt in schedule) {
+			console.log(mt);
+			$(`#${mt}Medals`).append(Statistics.createWinnerAndRunnerUpRow(mt))
+		}
+
+
+		console.log('schedule: ', schedule);
+	}
+}

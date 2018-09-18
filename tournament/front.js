@@ -1,10 +1,23 @@
 let teamsX = [];
 let playerCount = 0;
 $(document).ready(() => {
+  google.charts.load('current', { packages: ['corechart','bar'] });
   $("#tournamentName").html(config.tournamentName);
   $("#tStarted").hide();
   $("#tEnded").hide();
   $("#tNotStarted").show();
+  $("#scheduleGeneateError").html("").hide();
+  $("#scheduleListInfo").hide();
+  $("#medalListInfo").hide();
+  
+  $("#scheduleListEmptyInfo").show();
+  $("#statsListEmptyInfo").show();
+  $("#medalListEmptyInfo").show();
+
+
+  $("#runAllMatches").show();
+  $("#tourProgress").hide();
+  $("#stats").hide();
 
   $("#menuItems ul li a").bind("mouseenter mouseleave", function () {
     $(this.children[0]).toggleClass("fa-spin text-orange");
@@ -13,6 +26,13 @@ $(document).ready(() => {
   $("#back2Top").click(function (event) {
     event.preventDefault();
     $('html, body').animate({ scrollTop: 0 }, 1000);
+    return false;
+  });
+
+  $(".scrollTo").click(function (event) {
+    event.preventDefault();
+    let elemId = "#" + this.id.split("_")[0];
+    $('html, body').animate({ scrollTop: $(elemId).offset().top }, 1000);
     return false;
   });
 
@@ -116,6 +136,12 @@ function saveSettings(e) {
 
 function saveTeam(e) {
   e.preventDefault();
+
+  if (config.isTournamentStarted) {
+    $("#createTeamError").html("Sorry ... tournament has begun, can't add any more teams").show();
+    return false;
+  }
+
   let serialisedForm = $("#team").serializeArray();
   let teamName = serialisedForm[0].value, b = [];
   serialisedForm.shift();
@@ -153,6 +179,7 @@ function saveTeam(e) {
     $('#successAlert').css("display", 'block');
     $('#createTeamsModalDialog').hide();
     $("#playerAddSection").html("");
+    $("#scheduleGeneateError").html("").hide();
     playerCount = 0;
     console.log('teamsX: ', teamsX);
 
@@ -169,6 +196,12 @@ function saveTeam(e) {
 
 function createRandomTeams(e) {
   e.preventDefault();
+
+  if (config.isTournamentStarted) {
+    $("#randomTeamError").html("Cannot generate teams after tournament has begun.").show();
+    return false;
+  }
+
   let noOfTeams = $("#numTeam").val() || 0;
   $("#randomTeamError").html("").hide();
   let requiredPlayers = 0, teamInfo = [];
@@ -211,7 +244,7 @@ function createRandomTeams(e) {
         teamInfo.forEach(team => {
           for (let i = 0; i < team.reqPlayers; i++) {
             let dp = data.results.shift();
-            let p = { id: i, name: `${dp.name.first} ${dp.name.last}`, sex: dp.gender == 'male' ? 'M' : 'F', history: [], points: 0 };
+            let p = { id: i, name: `${dp.name.first} ${dp.name.last}`, sex: dp.gender == 'male' ? 'M' : 'F', history: [], points: 0, teamName: team.team};
             team.players.push(p);
           }
           TeamMethods.createDoubles(team);
@@ -228,6 +261,7 @@ function createRandomTeams(e) {
           $('#successrandomTeam').css("display", 'none');
           $('#randomTeamModal').modal('hide');
           $("#tournamentName").html(config.tournamentName);
+          $("#scheduleGeneateError").html("").hide();
         }, 2000)
       }, 1000);
     },
@@ -270,7 +304,6 @@ function submitEditedTeamRow(team, player) {
 }
 
 function viewTeams() {
-  // e.preventDefault();
   console.log('teamsX: ', teamsX);
   $("#teamAccordion").html("");
 
@@ -282,7 +315,7 @@ function viewTeams() {
   let teamAcc = "";
   teamsX.forEach((team, i) => {
     let show = i == 0 ? "show" : "";
-    let players = `<table class="table table-borderless">
+    let players = `<table class="table table-borderless table-fixed">
     <thead>
       <tr>
         <th scope="col">#</th>
@@ -332,7 +365,7 @@ function viewTeams() {
     <div id="collapse${i + 1}" class="collapse ${show}" aria-labelledby="heading${i + 1}" data-parent="#teamAccordion">
       <div class="card-body">
         <div class="clearfix">
-          <div class="float-left text-danger error" id="teamEditError_${i+1}"></div>
+          <div class="float-left text-danger error" id="teamEditError_${i + 1}"></div>
         </div>
         ${players}
       </div>
@@ -342,3 +375,4 @@ function viewTeams() {
 
   $("#teamAccordion").append(teamAcc);
 }
+
