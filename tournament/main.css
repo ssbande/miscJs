@@ -332,7 +332,7 @@ input:checked + .slider:before {
   overflow-x: hidden;
 }
 
-.table-fixed thead {
+/* .table-fixed thead {
   width: 97%;
 }
 
@@ -342,7 +342,7 @@ input:checked + .slider:before {
 .table-fixed thead > tr> th {
   float: left;
   border-bottom-width: 0;
-}
+} */
 
 
 

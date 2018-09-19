@@ -1,0 +1,36 @@
+.outerDiv {
+  height: 50px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  /* border: 1px solid silver; */
+}
+
+.rr .outerDiv {
+  height: 50px;
+}
+
+.rr .outerDiv > div, 
+.qf .outerDiv > div,
+.sf .outerDiv > div,
+.ff .outerDiv > div{
+  border: 1px solid red;
+  padding: 10px;
+}
+
+
+.qf .outerDiv {
+  height: 100px;
+}
+
+.sf .outerDiv {
+  height: 200px;
+}
+
+.ff .outerDiv {
+  height: 400px;
+}
+
+.rr .connect {
+  border-bottom: 1px solid blue;
+}

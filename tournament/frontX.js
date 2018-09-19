@@ -95,18 +95,18 @@ const ScheduleMethods = {
 		console.log(schedule[key][stage].matches)
 		schedule[key][stage].matches.forEach((match, i) => {
 			let x = `<tr>
-				<td>${i+1}</td>
-				<td>${match.t1 === 'undefined' || match.t1< 0 ? '--' : match.t1}</td>
+				<td>${i + 1}</td>
+				<td>${match.t1}</td>
 				<td class="font-weight-bold text-orange">${match.p1}</td>
-				<td class="font-weight-bold">- Vs -</td>				
+				<td class="font-weight-bold">Vs</td>				
 				<td class="font-weight-bold text-orange">${match.p2}</td>
-				<td>${match.t2 === 'undefined' || match.t2 < 0 ? '--' : match.t2}</td>
+				<td>${match.t2}</td>
 				<td class="text-orange">${match.won == "" ? '--' : match.won}</td>
 			</tr>`;
 			$("#playOffTblBody").append(x);
 		});
 	},
-	
+
 	createInfoRow: function createInfoRow(key) {
 		let objLen = Object.keys(schedule[key]).length;
 		let res = "";
@@ -128,7 +128,7 @@ const ScheduleMethods = {
 
 	generateMatchSchedule: function generateMatchSchedule() {
 		if (teamsX.length == 0) {
-			console.log('no teams');
+			
 			$("#scheduleGeneateError").html("There are no teams yet. Please access Menu for the same and then create schedule.").show();
 			return false;
 		}
@@ -161,9 +161,18 @@ const ScheduleMethods = {
 					matches[stage.key] = (Object.assign({}, stage, { matchCount: m, order: count }));
 					players = stage.knockOut ? m : stage.limit;
 					schedule[key] = matches;
+				} else if(players===1 && stage.key==='FF') {
+					schedule[key] = {};
+					count++;
+
+					let m = stage.knockOut ? (players % 2 == 0 ? players / 2 : (players + 1) / 2) : Array.from({ length: players }, (v, k) => k).reduce((x, y) => x + y, 0);
+					stage.pCount = players;
+					matches[stage.key] = (Object.assign({}, stage, { matchCount: m, order: count }));
+					players = stage.knockOut ? m : stage.limit;
+					schedule[key] = matches;
 				}
 			});
-
+			console.log('schedule from frontX: ', schedule);
 			if (key.includes('Singles')) {
 				ScheduleMethods.generateScheduleForSingles(keyPlayers, key);
 			} else {
@@ -171,7 +180,7 @@ const ScheduleMethods = {
 			}
 		}
 
-		console.log('schedule from frontX: ', schedule);
+		//console.log('schedule from frontX: ', schedule);
 		let startDate = new Date(config.startDate);
 		let endDate = new Date(startDate);
 		endDate.setDate(endDate.getDate() + config.days);
@@ -188,11 +197,12 @@ const ScheduleMethods = {
 		$("#tTeamNo").html(teamsX.length);
 		$("#tMatchNo").html(totalMatches);
 		$("#scheduleListInfo").show();
-		$("#scheduleListEmptyInfo").hide();
+		$("#scheduleListEmptyInfo").html("Click on the stage names to view the detailed play-offs.");
 		ScheduleMethods.totalMatches = totalMatches;
 	},
 
 	generateScheduleForSingles: function generateScheduleForSingles(players, keyName) {
+		//console.log("players",players,keyName)
 		const stage = config.stages.find(s => s.limit < players.length);
 		stage.pCount = players.length;
 		let matches = [];
@@ -200,13 +210,14 @@ const ScheduleMethods = {
 		// Select two random players from the players length;
 		if (stage.knockOut) {
 			if (players.length % 2 !== 0) {
-				players.push({ id: 1, name: 'bye', sex: '', history: [], team: -1, playerId: players.length })
+				players.push({ id: 1, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
 			}
 
 			let incPlayers = new Set();
 			while (incPlayers.size < players.length) {
 				let matchPlayers = getTwoRandomNos(players.length);
 				while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
+					console.log("singles bye",players,matchPlayers);
 					matches.push({
 						p1: players[matchPlayers.p1].name,
 						p2: players[matchPlayers.p2].name,
@@ -242,14 +253,18 @@ const ScheduleMethods = {
 	},
 
 	generateScheduleForDoubles: function generateScheduleForDoubles(players, keyName) {
-		const stage = config.stages.find(s => s.limit < players.length);
+		let stage = config.stages.find(s => s.limit < players.length);
 		let matches = [];
 
-		// console.log(' doubles from gen schedule: ', keyName, stage);
+		if (!stage) {
+			stage=config.stages.find(s => s.key=='FF');
+		}
 
+		console.log(' doubles from gen schedule: ', keyName, stage,players);
+		
 		if (stage.knockOut) {
 			if (players.length % 2 !== 0) {
-				players.push({ id: 1, name: 'bye', sex: '', history: [], team: -1, playerId: players.length })
+				players.push({ id: 1, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
 			}
 
 			let incPlayers = new Set();
@@ -257,7 +272,7 @@ const ScheduleMethods = {
 				let matchPlayers = getTwoRandomNos(players.length);
 				while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
 					let t1 = players[matchPlayers.p1], t2 = players[matchPlayers.p2];
-					console.log('t1: ', t1, ' t2: ', t2)
+					//console.log('t1: ', t1, ' t2: ', t2)
 					let firstPlayer = t1.name == 'bye' ? 'bye' : (
 						teamsX.find(f => f.team == t1.team)[keyName].find(p => p.bpName == t1.bpName).bpName);
 
@@ -344,9 +359,9 @@ const PlayMethods = {
 						$("#stats").show("slow");
 						Statistics.allTeams();
 						Statistics.generateMedalTally();
-					}, 2000);
+					}, 1000);
 				}
-			}, 1000 * i);
+			}, 500 * i);
 		}
 	},
 
@@ -398,10 +413,11 @@ const PlayMethods = {
 			match[pL + 'Score'] = loserScore;
 		});
 
-		let roundWinners = winners.map((w, i) => ({ id: i, name: w.name, points: w.points, history: w.history, sex: w.sex, team: w.team, playerId: w.playerId })).sort((x, y) => y.points - x.points).filter(f => f.id < stage.limit);
+		let roundWinners = winners.map((w, i) => ({ id: i, name: w.name, points: w.points, history: w.history, sex: w.sex,teamName: w.teamName, playerId: w.playerId })).sort((x, y) => y.points - x.points).filter(f => f.id < stage.limit);
 
 		matchType[stageKey]['winners'] = roundWinners;
-		console.log('All Schedule after ', stageKey, schedule, teamsX);
+		//console.log('All Schedule after singles', stageKey, schedule, teamsX,winners,"all players",allPlayers);
+		//console.log('All Schedule after singles',  stageKey, winners,"all players",allPlayers);
 		if (stageKey !== 'FF') {
 			ScheduleMethods.generateScheduleForSingles(roundWinners, keyName)
 		}
@@ -496,7 +512,7 @@ const PlayMethods = {
 		matchType[stageKey]['winners'] = roundWinners;
 		// console.log('Match Type: ', matchType, matchType[stageKey]);
 
-		console.log('All Schedule after ', stageKey, schedule, teamsX);
+		//console.log('All Schedule after ', stageKey, schedule, teamsX);
 		if (stageKey !== 'FF') {
 			ScheduleMethods.generateScheduleForDoubles(roundWinners, keyName)
 		}
@@ -508,27 +524,25 @@ const Statistics = {
 	allTeams: function () {
 		$("#statsListEmptyInfo").hide();
 		var options = {
-				title: 'Team Points',
-				subtitle: 'Teams stats for total points',
-			is3D: true,
 			pieSliceText: 'value',
-			pieStartAngle: 135,
+			// pieStartAngle: 135,
 			tooltip: { text: 'value' },
-			pieHole: 0.2,
+			is3D: true,
+			colors: ["#ffdc73", "#ffcf40",  "#ffbf00", "#bf9b30", "#a67c00", "#FFDC73", "#FFCF40", "#FFBF00", "#BF9B30", "#A67C00"],
 			legend: {
 				width: "10%",
 				alignment: "center",
-				position: "bottom"
+				position: "bottom",
+				textStyle: { color: 'whitesmoke', fontName: 'Play', fontSize: '16px' }
 			},
-			fontName: 'Almendra Display', fontSize: '16px',
+			fontName: 'Play', fontSize: '16px',
 			backgroundColor: {
 				fill: "#343a40"
 			},
-			chartArea: { left: 30, top: 0, width: '90%', height: '90%'}
+			chartArea: { left: 30, top: 0, width: '90%', height: '90%' }
 		};
 		// Define the chart to be drawn.
 		// pie chart
-		console.log(google)
 		var data = new google.visualization.DataTable();
 		let dataX = teamsX.map(team => [team.team, team.players.reduce((sum, item) => sum + item.points, 0)])
 		data.addColumn('string', 'Team');
@@ -537,50 +551,64 @@ const Statistics = {
 		var chart = new google.visualization.PieChart(document.getElementById('myPieChart'));
 		chart.draw(data, options);
 
-		let actualData = teamsX.map(team =>  {
+		let actualData = teamsX.map(team => {
 			let history = [];
-			for(let i in team) {
-				if(team[i].length && typeof team[i] === "object") {
-					team[i].map(item=>{
-						history=[...history,...item.history]
+			for (let i in team) {
+				if (team[i].length && typeof team[i] === "object") {
+					team[i].map(item => {
+						history = [...history, ...item.history]
 					})
 				}
 			}
 			return [team.team,
-				history.reduce((sum, item) =>item.winStatus===1?++sum:sum+=0, 0),
-			history.reduce((sum, item) => item.winStatus===0?++sum:sum+=0, 0)];
-		});	 
-			
+			history.reduce((sum, item) => item.winStatus === 1 ? ++sum : sum += 0, 0),
+			history.reduce((sum, item) => item.winStatus === 0 ? ++sum : sum += 0, 0)];
+		});
+
 		// bar chart
 		var data1 = google.visualization.arrayToDataTable([
-			['Team', 'Wins', 'Looses'],
+			['Team', 'Won', 'Lost'],
 			...actualData
 		]);
-	
+
 		var options1 = {
-			chart: {
-				title: 'Won Lost',
-				subtitle: 'Teams stats for won and lost matches',
-				
-			},
 			height: 500,
-			legend:{
-				position:"top",
-				alignment:"center"
+			animation: {
+				startup: true,
+				easing: "out",
+				duration: 5000
 			},
+			axisTitlesPosition: "none",
+			is3D: true,
+			hAxis: {
+				textStyle: { color: 'whitesmoke', fontName: 'Play', fontSize: '16px' }
+			},
+			vAxis: {
+				gridlines: {
+					color: "#6c757d"
+				},
+				textStyle: { color: 'whitesmoke', fontName: 'Play', fontSize: '16px' }
+			},
+			backgroundColor: {
+				fill: "#343a40"
+			},
+			colors: ["#ffbf00", "#ffdc73"],
 			legend: {
 				width: "10%",
 				alignment: "center",
-				position: "bottom"
+				position: "bottom",
+				textStyle: { color: 'whitesmoke', fontName: 'Play', fontSize: '16px' }
 			},
-			chartArea: { left: 30, top: 0,height: '90%' }
+			fontName: 'Play', fontSize: '16px',
+			chartArea: { height: '90%', width: '90%'}
 		};
-	
-		var chart1 = new google.charts.Bar(document.getElementById('myBarChart'));
-	
-		chart1.draw(data1, google.charts.Bar.convertOptions(options1));
-        
-      
+
+		// var chart1 = new google.charts.Bar(document.getElementById('myBarChart'));
+		var chart1 = new google.visualization.ColumnChart(document.getElementById('myBarChart'));
+
+		chart1.draw(data1, options1);
+
+
 	},
 
 	createWinnerAndRunnerUpRow: function createWinnerAndRunnerUpRow(key) {
@@ -593,13 +621,16 @@ const Statistics = {
 		}
 
 		let finals = schedule[key]["FF"];
-		if(finals) {
+		if (finals) {
 			let final = finals.matches[0];
+			//console.log('final: ', final);
 			let winner = final.won;
+			let winTeam = final.won == final.p1 ? final.t1 : final.t2;
+			let loseTeam = final.won == final.p1 ? final.t2 : final.t1;
 			let runnerUp = final.won == final.p1 ? final.p2 : final.p1;
-			res+=`<li class="list-group-item list-group-item-light">
-			<i class="fas fa-trophy text-orange"></i> ${winner}</li>
-		<li class="list-group-item list-group-item-light">${runnerUp}</li>`
+			res += `<li class="list-group-item list-group-item-light">
+			<i class="fas fa-trophy text-orange"></i> ${winner} - ${winTeam}</li>
+		<li class="list-group-item list-group-item-light">${runnerUp} - ${loseTeam}</li>`
 		}
 
 		return res;
@@ -610,11 +641,11 @@ const Statistics = {
 		$("#medalListInfo").show();
 
 		for (const mt in schedule) {
-			console.log(mt);
+			//console.log(mt);
 			$(`#${mt}Medals`).append(Statistics.createWinnerAndRunnerUpRow(mt))
 		}
 
 
-		console.log('schedule: ', schedule);
+		//console.log('schedule: ', schedule);
 	}
 }

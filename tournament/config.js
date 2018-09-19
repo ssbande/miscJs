@@ -41,10 +41,10 @@ var config = {
   startDate: Date.now(),
   days: 2,
   stages: [
-    { name: 'Round Robin', pCount: Infinity, limit: 8, knockOut: false, key: 'RR' },
+    { name: 'Round Robin', pCount: Infinity, limit: 8, knockOut: true, key: 'RR' },
     { name: 'Quater Finals', pCount: 8, limit: 4, knockOut: true, key: 'QF' },
     { name: 'Semi Finals', pCount: 4, limit: 2, knockOut: true, key: 'SF' },
-    { name: 'Finals', pCount: 2, limit: 1, knockOut: true, key: 'FF' },
+    { name: 'Finals', pCount: 2, limit: 1, knockOut: true, key: 'FF' }
   ],
   maxScore: 6,
   nameRegex:'^(?![\s.]+$)[a-zA-Z\s]{3,10}$',

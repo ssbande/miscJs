@@ -3,6 +3,8 @@ let playerCount = 0;
 $(document).ready(() => {
   google.charts.load('current', { packages: ['corechart','bar'] });
   $("#tournamentName").html(config.tournamentName);
+  $("#tourName1").html(config.tournamentName);
+  
   $("#tStarted").hide();
   $("#tEnded").hide();
   $("#tNotStarted").show();
@@ -129,6 +131,7 @@ function saveSettings(e) {
     $('#successAlertSettings').css("display", 'none');
     $('#settingsModal').modal('hide');
     $("#tournamentName").html(config.tournamentName);
+    $("#tourName1").html(config.tournamentName);
   }, 2000)
 
   console.log('config: ', config);
