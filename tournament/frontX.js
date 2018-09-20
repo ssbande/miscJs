@@ -210,7 +210,7 @@ const ScheduleMethods = {
 		// Select two random players from the players length;
 		if (stage.knockOut) {
 			if (players.length % 2 !== 0) {
-				players.push({ id: 1, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
+				players.push({ id: 999998, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
 			}
 
 			let incPlayers = new Set();
@@ -264,7 +264,7 @@ const ScheduleMethods = {
 		
 		if (stage.knockOut) {
 			if (players.length % 2 !== 0) {
-				players.push({ id: 1, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
+				players.push({ id: 999999, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
 			}
 
 			let incPlayers = new Set();
@@ -380,6 +380,8 @@ const PlayMethods = {
 			let winIndex = Math.floor(Math.random() * 2);
 			let loseIndex = !winIndex | 0;
 			let pW = 'p' + (winIndex + 1), pL = 'p' + (loseIndex + 1);
+			let initialWinner = match[pW];
+
 			if (!match.won) {
 				match.won = match[pW];
 			} else {
@@ -409,15 +411,32 @@ const PlayMethods = {
 				loser.points += 0;
 			}
 
-			match[pW + 'Score'] = winnerScore;
-			match[pL + 'Score'] = loserScore;
+			// match[pW + 'Score'] = winnerScore;
+			// match[pL + 'Score'] = loserScore;
+
+			if (initialWinner == 'bye') {
+				match[pW] = 'bye';
+				match[pL + 'Score'] = winnerScore;
+				match[pW + 'Score'] = 0;
+			} else {
+				match[pW + 'Score'] = winnerScore;
+				match[pL + 'Score'] = loserScore;
+			}
 		});
 
-		let roundWinners = winners.map((w, i) => ({ id: i, name: w.name, points: w.points, history: w.history, sex: w.sex,teamName: w.teamName, playerId: w.playerId })).sort((x, y) => y.points - x.points).filter(f => f.id < stage.limit);
-
-		matchType[stageKey]['winners'] = roundWinners;
-		//console.log('All Schedule after singles', stageKey, schedule, teamsX,winners,"all players",allPlayers);
-		//console.log('All Schedule after singles',  stageKey, winners,"all players",allPlayers);
+		let roundWinners = winners.map((w, i) => ({ 
+			id: i, 
+			name: w.name, 
+			points: w.points, 
+			history: w.history, 
+			sex: w.sex,
+			teamName: w.teamName, 
+			playerId: w.playerId 
+		}))
+			.sort((x, y) => y.points - x.points)
+			.filter((f, i) => i < stage.limit);
+			console.log(roundWinners)
+		matchType[stageKey]['winners'] = roundWinners
 		if (stageKey !== 'FF') {
 			ScheduleMethods.generateScheduleForSingles(roundWinners, keyName)
 		}
@@ -499,16 +518,10 @@ const PlayMethods = {
 			player2Name: w.player2Name
 		}))
 			.sort((x, y) => y.points - x.points)
-			.filter(f => f.id < stage.limit);
-
-
-
-
-
+			.filter((f, i) => i < stage.limit);
+			// .filter(f => f.id < stage.limit);
 
 		// console.log(' roundWinners: ', roundWinners);
-
-
 		matchType[stageKey]['winners'] = roundWinners;
 		// console.log('Match Type: ', matchType, matchType[stageKey]);
 

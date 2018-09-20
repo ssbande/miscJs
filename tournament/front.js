@@ -81,6 +81,10 @@ $(document).ready(() => {
     $(`div[id^="#teamEditError"`).html("").hide()
     viewTeams();
   })
+  $('#viewWinners').on('show.bs.modal', function (e) {
+    $("#stages").html("");
+    loadMatches();
+  })
 })
 
 function addPlayerRow() {
