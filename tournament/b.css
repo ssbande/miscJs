@@ -1,0 +1,48 @@
+.stageContainer .heading .col{
+    margin: 2px;
+    border: 1px solid cadetblue;
+}
+
+.stageContainer .heading,
+.stageContainer .playOffChart {
+    margin: 0 !important;
+}
+
+.heading {
+    width: 100%;
+    text-align: center;
+}
+
+.playOffChart {
+    height: 400px; 
+    width: 100%; 
+    text-align: center;
+    border: 1px solid cadetblue;
+}
+
+.playOffChart col{
+    padding: 0;
+    margin: 0;
+    border: 1px solid cadetblue;
+}
+
+.playerContainer {
+    display: flex;
+    align-items: center;
+}
+
+.RR {
+    min-height: 50px;
+}
+
+.QF {
+    min-height: 100px;
+}
+
+.SF {
+    height: 200px;
+}
+
+.FF {
+    height: 400px;
+}

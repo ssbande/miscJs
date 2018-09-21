@@ -83,7 +83,7 @@ $(document).ready(() => {
   })
   $('#viewWinners').on('show.bs.modal', function (e) {
     $("#stages").html("");
-    loadMatches();
+    loadMatchesNew();
   })
 })
 
