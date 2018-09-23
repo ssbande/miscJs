@@ -1,0 +1,51 @@
+.headings {
+    border: 1px solid green;
+}
+
+.rowSeparator {
+    height: 25px;
+}
+
+.canvasHeight{
+    height: 720px;
+}
+
+.poCol {
+    padding:0; 
+    margin: 0; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-around;
+}
+
+.player {
+    height: 70px; 
+    border: 1px solid green; 
+    margin: 10px 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.leftLink {
+    height: 1px; 
+    border-top: 1px solid green;
+}
+
+.rightLink {
+    border-width: 1px 1px 1px 0; 
+    border-style: solid; 
+    border-color: green;
+}
+
+.QF {
+    height: 90px; 
+}
+
+.SF {
+    height: 180px;
+}
+
+.FF {
+    height: 360px;
+}
