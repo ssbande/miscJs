@@ -11,12 +11,13 @@ $(document).ready(() => {
   $("#scheduleGeneateError").html("").hide();
   $("#scheduleListInfo").hide();
   $("#medalListInfo").hide();
+  $("#playOffsInfo").hide();
   
   $("#scheduleListEmptyInfo").show();
   $("#statsListEmptyInfo").show();
   $("#medalListEmptyInfo").show();
-
-
+  $("#playOffsEmptyInfo").show();
+  
   $("#runAllMatches").show();
   $("#tourProgress").hide();
   $("#stats").hide();
@@ -83,7 +84,8 @@ $(document).ready(() => {
   })
   $('#viewWinners').on('show.bs.modal', function (e) {
     $("#stages").html("");
-    loadMatchesNew();
+    graphPlayOffs();
+    // load();
   })
 })
 

@@ -47,6 +47,14 @@ var typeEnum = {
   mixDoubles: 'Mix Doubles'
 };
 
+function getStageNameFromCode(code) {
+  return code == 'WW' ? 'Winner' : config.stages.find(x => x.key == code).name;
+  // if(code == 'WW') {
+  //   return 'Winner'
+  // } else {
+  //   return config.stages.find(x => x.key == code).name;
+  // }
+}
 
 function getTwoRandomNos(len) {
   let p1 = Math.floor(Math.random() * len);

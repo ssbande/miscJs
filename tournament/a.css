@@ -1,12 +1,8 @@
-body {
-  font-family: 'Merienda', cursive;
-}
 
 .chart .row, .chart .col {
   padding:0 !important;
   margin:0 !important;
 }
-
 .outerDiv {
 height: 50px; 
 display: flex; 
@@ -94,10 +90,12 @@ border: 2px solid #f4a641;
   align-content: center;
   flex-direction: column;
   font-weight: bold;
-  border: 1px solid #f4a641;
-  margin: 2px;
-  width: 100%;
+  border: 2px solid #f4a641;
 }
 .heading {
   border-radius: 5px;
+}
+
+.noLeft{
+  display:none
 }

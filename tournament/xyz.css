@@ -7,7 +7,7 @@
 }
 
 .canvasHeight{
-    height: 720px;
+    height: 400px;
 }
 
 .poCol {
@@ -19,9 +19,9 @@
 }
 
 .player {
-    height: 70px; 
+    height: 50px; 
     border: 1px solid green; 
-    margin: 10px 0; 
+    margin: 1px 0; 
     display: flex; 
     justify-content: center; 
     align-items: center;
@@ -49,13 +49,13 @@
 }
 
 .QF {
-    height: 90px; 
+    height: 50px; 
 }
 
 .SF {
-    height: 180px;
+    height: 100px;
 }
 
 .FF {
-    height: 360px;
+    height: 200px;
 }
