@@ -27,6 +27,17 @@ body {
   background-image: -o-linear-gradient(left, #343a40, #ffc107, #343a40); 
 }
 
+.tourMenuWhite > hr {
+  border: 0; 
+  height: 1px; 
+  padding: 0;
+  margin: 10px 0 0 0;
+  background-image: -webkit-linear-gradient(left, #fff, #ffc107, #fff);
+  background-image: -moz-linear-gradient(left, #fff, #ffc107, #fff);
+  background-image: -ms-linear-gradient(left, #fff, #ffc107, #fff);
+  background-image: -o-linear-gradient(left, #fff, #ffc107, #fff); 
+}
+
 .darkBlackBg {
   background: #343a40;
 }

@@ -12,7 +12,9 @@ $(document).ready(() => {
   $("#scheduleListInfo").hide();
   $("#medalListInfo").hide();
   $("#playOffsInfo").hide();
-  
+
+  $(".showGraphicalPlayOff").hide();
+
   $("#scheduleListEmptyInfo").show();
   $("#statsListEmptyInfo").show();
   $("#medalListEmptyInfo").show();
@@ -55,6 +57,10 @@ $(document).ready(() => {
     playerCount = 0;
   })
 
+  $('#createTeamModal').on('show.bs.modal', function (e) {
+    $("#createTeamsModalDialog").show();
+  })
+
   $('#settingsModal').on('hidden.bs.modal', function (e) {
     $("#settings")[0].reset();
     $("#settingsError").html("").hide();
@@ -62,7 +68,7 @@ $(document).ready(() => {
 
   $('#settingsModal').on('show.bs.modal', function (e) {
     $("#tName").attr("placeholder", config.tournamentName)
-    $("#trrKnockOut").attr("checked", config.knockout)
+    $("#trrKnockOut").attr("checked", config.stages.find(s => s.key == "RR").knockOut)
     $("#pNum").val(config.playerNumber);
     $('#settingsModalDialog').show();
   })
@@ -83,9 +89,7 @@ $(document).ready(() => {
     viewTeams();
   })
   $('#viewWinners').on('show.bs.modal', function (e) {
-    $("#stages").html("");
-    graphPlayOffs();
-    // load();
+    // $("#stages").html("");
   })
 })
 
@@ -127,6 +131,7 @@ function saveSettings(e) {
   let tourName = serialisedForm.find(s => s.name == "tName");
 
   let isknockOut = switchKnockOut ? (switchKnockOut.value == "on" ? true : false) : false;
+
   config.playerNumber = playerNos ? playerNos.value : config.playerNumber;
   config.tournamentName = tourName ? (tourName.value.trim() == "" ? config.tournamentName : tourName.value.trim()) : config.tournamentName;
   config.stages.find(s => s.key == "RR").knockOut = isknockOut;
@@ -140,7 +145,6 @@ function saveSettings(e) {
     $("#tourName1").html(config.tournamentName);
   }, 2000)
 
-  console.log('config: ', config);
 }
 
 function saveTeam(e) {
@@ -165,7 +169,7 @@ function saveTeam(e) {
         playerId: (i % serialisedForm.length) / 2 + 1,
         points: 0,
         sex: serialisedForm[i + 1].value,
-        team: teamName
+        teamName: teamName
       })
       i += 2;
     };
@@ -190,7 +194,6 @@ function saveTeam(e) {
     $("#playerAddSection").html("");
     $("#scheduleGeneateError").html("").hide();
     playerCount = 0;
-    console.log('teamsX: ', teamsX);
 
     setTimeout(() => {
       $('#successAlert').css("display", 'none');
@@ -218,8 +221,6 @@ function createRandomTeams(e) {
   $("#createTeamsBtn").attr("disabled", true);
   $("#cancelCreateRandomTeams").hide();
 
-  console.log("noOfTeams: ", noOfTeams);
-
   if (noOfTeams == 0) {
     $("#randomTeamError").html("Some error occurred. Try again to create the teams.").show()
     return false;
@@ -227,8 +228,6 @@ function createRandomTeams(e) {
 
   for (let i = 0; i < noOfTeams; i++) {
     let r = Math.floor(Math.random() * 3) + 3;
-    // console.log("noOfTeams i: ", i);
-
     // Math.floor(Math.random() * (max - min + 1)) + min;
 
     requiredPlayers += r;
@@ -263,7 +262,6 @@ function createRandomTeams(e) {
         teamsX = teamInfo;
         localStorage.setItem('teams', JSON.stringify(teamsX));
         $("#teamNos").html(noOfTeams);
-        console.log('teamsX: ', teamsX);
         $('#successrandomTeam').css("display", 'block');
         $('#rTeamModalDialog').hide();
         setTimeout(() => {
@@ -278,7 +276,6 @@ function createRandomTeams(e) {
       if (localStorage.getItem('teams')) {
         teamsX = JSON.parse(localStorage.getItem('teams'));
       } else {
-        console.log(errorThrown);
         $("#cancelCreateRandomTeams").show();
         $("#createTeamsBtn").html(`Create Teams`);
         $("#randomTeamError").html("Some error occurred. Try again to create the teams.")
@@ -307,13 +304,9 @@ function submitEditedTeamRow(team, player) {
   teamsX[team].players[player].sex = newSex;
   $(`#displayPlayer_name_${team + 1}_${player + 1}`).html(newName);
   $(`#displayPlayer_sex_${team + 1}_${player + 1}`).html(newSex);
-
-
-  console.log('teamsX after edit: ', teamsX);
 }
 
 function viewTeams() {
-  console.log('teamsX: ', teamsX);
   $("#teamAccordion").html("");
 
   if (teamsX.length == 0) {

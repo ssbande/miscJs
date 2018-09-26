@@ -1,0 +1,82 @@
+.headings {
+    /* border: 1px solid green; */
+}
+
+.rowSeparator {
+    height: 25px;
+}
+
+.canvasHeight{
+    height: 720px;
+}
+
+.poCol {
+    padding:0; 
+    margin: 0; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-around;
+}
+
+.neutralPlayer {
+    height: 70px; 
+    margin: 10px 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.player {
+    height: 70px; 
+    border: 1px solid #343a40; 
+    margin: 10px 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    text-align: center;
+    color: #ffc107;
+    background: #343a40;
+    font-size: 14px;
+    border-radius: 4px;
+    padding: 4px;
+    /* color: #818182;
+    background: #fdfdfe; */
+}
+
+.player:hover {
+    /* border: 4px solid rgba(255,255,255,.2);
+	border-radius: 3px;
+	box-shadow:
+		0 0 1px rgba(255,255,255,.8),
+		0 0 3px rgba(0,0,0,.8),
+		1px 1px 0 rgba(0,0,0,.8) inset,
+		-1px -1px 0 rgba(0,0,0,.8) inset; */
+}
+
+.neutralLeftLink {
+    height: 1px; 
+}
+
+.leftLink {
+    height: 1px; 
+    border-top: 1px solid silver;
+}
+
+.rightLink {
+    border-width: 1px 1px 1px 0; 
+    border-style: solid; 
+    border-color: silver;
+    border-radius: 4px;
+}
+
+.QF {
+    height: 90px; 
+}
+
+.SF {
+    height: 180px;
+}
+
+.FF {
+    height: 360px;
+}

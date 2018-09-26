@@ -92,7 +92,6 @@ const ScheduleMethods = {
 		$("#playOffTitle").html("");
 		$("#playOffTblBody").html("");
 		$("#playOffTitle").append("View Playoffs - ").append(key).append(" >> " + stageName);
-		console.log(schedule[key][stage].matches)
 		schedule[key][stage].matches.forEach((match, i) => {
 			let x = `<tr>
 				<td>${i + 1}</td>
@@ -128,7 +127,7 @@ const ScheduleMethods = {
 
 	generateMatchSchedule: function generateMatchSchedule() {
 		if (teamsX.length == 0) {
-			
+
 			$("#scheduleGeneateError").html("There are no teams yet. Please access Menu for the same and then create schedule.").show();
 			return false;
 		}
@@ -161,7 +160,7 @@ const ScheduleMethods = {
 					matches[stage.key] = (Object.assign({}, stage, { matchCount: m, order: count }));
 					players = stage.knockOut ? m : stage.limit;
 					schedule[key] = matches;
-				} else if(players===1 && stage.key==='FF') {
+				} else if (players === 1 && stage.key === 'FF') {
 					schedule[key] = {};
 					count++;
 
@@ -172,7 +171,6 @@ const ScheduleMethods = {
 					schedule[key] = matches;
 				}
 			});
-			console.log('schedule from frontX: ', schedule);
 			if (key.includes('Singles')) {
 				ScheduleMethods.generateScheduleForSingles(keyPlayers, key);
 			} else {
@@ -180,7 +178,6 @@ const ScheduleMethods = {
 			}
 		}
 
-		//console.log('schedule from frontX: ', schedule);
 		let startDate = new Date(config.startDate);
 		let endDate = new Date(startDate);
 		endDate.setDate(endDate.getDate() + config.days);
@@ -202,118 +199,120 @@ const ScheduleMethods = {
 	},
 
 	generateScheduleForSingles: function generateScheduleForSingles(players, keyName) {
-		//console.log("players",players,keyName)
 		const stage = config.stages.find(s => s.limit < players.length);
-		stage.pCount = players.length;
-		let matches = [];
+		if (stage) {
+			stage.pCount = players.length;
+			let matches = [];
 
-		// Select two random players from the players length;
-		if (stage.knockOut) {
-			if (players.length % 2 !== 0) {
-				players.push({ id: 999998, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
-			}
+			// Select two random players from the players length;
+			if (stage.knockOut) {
+				if (players.length % 2 !== 0) {
+					players.push({ id: 999998, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
+				}
 
-			let incPlayers = new Set();
-			while (incPlayers.size < players.length) {
-				let matchPlayers = getTwoRandomNos(players.length);
-				while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
-					console.log("singles bye",players,matchPlayers);
-					matches.push({
-						p1: players[matchPlayers.p1].name,
-						p2: players[matchPlayers.p2].name,
-						won: players[matchPlayers.p1].name === 'bye' ? players[matchPlayers.p2].name : (players[matchPlayers.p2].name === 'bye' ? players[matchPlayers.p1].name : ''),
-						t1: players[matchPlayers.p1].teamName,
-						t2: players[matchPlayers.p2].teamName,
-						p1Score: 0,
-						p2Score: 0
-					})
-					incPlayers.add(matchPlayers.p1);
-					incPlayers.add(matchPlayers.p2);
+				let incPlayers = new Set();
+				while (incPlayers.size < players.length) {
+					let matchPlayers = getTwoRandomNos(players.length);
+					while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
+						matches.push({
+							p1: players[matchPlayers.p1].name,
+							p2: players[matchPlayers.p2].name,
+							won: players[matchPlayers.p1].name === 'bye' ? players[matchPlayers.p2].name : (players[matchPlayers.p2].name === 'bye' ? players[matchPlayers.p1].name : ''),
+							t1: players[matchPlayers.p1].teamName,
+							t2: players[matchPlayers.p2].teamName,
+							p1Score: 0,
+							p2Score: 0,
+						})
+						incPlayers.add(matchPlayers.p1);
+						incPlayers.add(matchPlayers.p2);
+					}
+				}
+			} else {
+				for (let i = 0; i < players.length; i++) {
+					const player1 = players[i];
+					for (let j = i + 1; j < players.length; j++) {
+						const player2 = players[j];
+						matches.push({
+							p1: player1.name,
+							p2: player2.name,
+							won: player1.name === 'bye' ? player2.name : (player2.name === 'bye' ? player1.name : ''),
+							t1: player1.teamName,
+							t2: player2.teamName,
+							p1Score: 0,
+							p2Score: 0,
+							// matchIndex: matches.length
+						});
+					}
 				}
 			}
+
+			schedule[keyName][stage.key]["matches"] = matches;
 		} else {
-			for (let i = 0; i < players.length; i++) {
-				const player1 = players[i];
-				for (let j = i + 1; j < players.length; j++) {
-					const player2 = players[j];
-					matches.push({
-						p1: player1.name,
-						p2: player2.name,
-						won: player1.name === 'bye' ? player2.name : (player2.name === 'bye' ? player1.name : ''),
-						t1: player1.teamName,
-						t2: player2.teamName,
-						p1Score: 0,
-						p2Score: 0
-					});
-				}
-			}
+			schedule[keyName] = {}
 		}
-
-		schedule[keyName][stage.key]["matches"] = matches;
 	},
 
 	generateScheduleForDoubles: function generateScheduleForDoubles(players, keyName) {
 		let stage = config.stages.find(s => s.limit < players.length);
-		let matches = [];
+		if (stage) {
+			let matches = [];
 
-		if (!stage) {
-			stage=config.stages.find(s => s.key=='FF');
-		}
-
-		console.log(' doubles from gen schedule: ', keyName, stage,players);
-		
-		if (stage.knockOut) {
-			if (players.length % 2 !== 0) {
-				players.push({ id: 999999, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
+			if (!stage) {
+				stage = config.stages.find(s => s.key == 'FF');
 			}
 
-			let incPlayers = new Set();
-			while (incPlayers.size < players.length) {
-				let matchPlayers = getTwoRandomNos(players.length);
-				while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
-					let t1 = players[matchPlayers.p1], t2 = players[matchPlayers.p2];
-					//console.log('t1: ', t1, ' t2: ', t2)
-					let firstPlayer = t1.name == 'bye' ? 'bye' : (
-						teamsX.find(f => f.team == t1.team)[keyName].find(p => p.bpName == t1.bpName).bpName);
+			if (stage.knockOut) {
+				if (players.length % 2 !== 0) {
+					players.push({ id: 999999, name: 'bye', sex: '', history: [], team: '--', teamName: '--', playerId: players.length })
+				}
 
-					let secondPlayer = t2.name == 'bye' ? 'bye' : (
-						teamsX.find(f => f.team == t2.team)[keyName].find(p => p.bpName == t2.bpName).bpName);
+				let incPlayers = new Set();
+				while (incPlayers.size < players.length) {
+					let matchPlayers = getTwoRandomNos(players.length);
+					while (!incPlayers.has(matchPlayers.p1) && !incPlayers.has(matchPlayers.p2)) {
+						let t1 = players[matchPlayers.p1], t2 = players[matchPlayers.p2];
+						let firstPlayer = t1.name == 'bye' ? 'bye' : (
+							teamsX.find(f => f.team == t1.team)[keyName].find(p => p.bpName == t1.bpName).bpName);
 
-					matches.push({
-						p1: firstPlayer,
-						p2: secondPlayer,
-						won: firstPlayer === 'bye' ? secondPlayer : (secondPlayer === 'bye' ? firstPlayer : ''),
-						t1: t1.team,
-						t2: t2.team,
-						p1Score: 0,
-						p2Score: 0
-					})
-					incPlayers.add(matchPlayers.p1);
-					incPlayers.add(matchPlayers.p2);
+						let secondPlayer = t2.name == 'bye' ? 'bye' : (
+							teamsX.find(f => f.team == t2.team)[keyName].find(p => p.bpName == t2.bpName).bpName);
+
+						matches.push({
+							p1: firstPlayer,
+							p2: secondPlayer,
+							won: firstPlayer === 'bye' ? secondPlayer : (secondPlayer === 'bye' ? firstPlayer : ''),
+							t1: t1.team,
+							t2: t2.team,
+							p1Score: 0,
+							p2Score: 0
+						})
+						incPlayers.add(matchPlayers.p1);
+						incPlayers.add(matchPlayers.p2);
+					}
+				}
+			} else {
+				for (let i = 0; i < players.length; i++) {
+					const t1 = players[i];
+					let firstPlayer = teamsX.find(f => f.team == t1.team)[keyName]
+						.find(p => p.bpName == t1.bpName).bpName;
+					for (let j = i + 1; j < players.length; j++) {
+						const t2 = players[j];
+						let secondPlayer = teamsX.find(f => f.team == t2.team)[keyName]
+							.find(p => p.bpName == t2.bpName).bpName;
+
+						matches.push({
+							p1: firstPlayer,
+							p2: secondPlayer,
+							won: '',
+							p1Score: 0,
+							p2Score: 0
+						});
+					}
 				}
 			}
-		} else {
-			for (let i = 0; i < players.length; i++) {
-				const t1 = players[i];
-				let firstPlayer = teamsX.find(f => f.team == t1.team)[keyName]
-					.find(p => p.bpName == t1.bpName).bpName;
-				for (let j = i + 1; j < players.length; j++) {
-					const t2 = players[j];
-					let secondPlayer = teamsX.find(f => f.team == t2.team)[keyName]
-						.find(p => p.bpName == t2.bpName).bpName;
 
-					matches.push({
-						p1: firstPlayer,
-						p2: secondPlayer,
-						won: '',
-						p1Score: 0,
-						p2Score: 0
-					});
-				}
-			}
+			schedule[keyName][stage.key]["matches"] = matches;
 		}
-
-		schedule[keyName][stage.key]["matches"] = matches;
 	}
 }
 
@@ -321,13 +320,9 @@ const PlayMethods = {
 	playAll: function playAll(e) {
 		e.stopPropagation();
 		e.preventDefault();
-		// alert('play all matches here ... ');
 		config.isTournamentEnded = true;
-		// $("#tStarted").hide("slow");
 		$("#runAllMatches").hide("slow");
 		$("#tourProgress").show("slow");
-
-		// $("#tEnded").show("slow");
 
 		let allMatches = [];
 		for (const key in schedule) {
@@ -350,13 +345,14 @@ const PlayMethods = {
 
 				let percent = 100 / allMatches.length * (i + 1);
 				$("#tourProgress .progress-bar").css("width", percent + "%");
-				$("#tourProgressCaption").html(`Playing ${type.matchTypeFull} - ${type.name} + ${ScheduleMethods.totalMatches}`);
+				$("#tourProgressCaption").html(`Playing ${type.matchTypeFull} - ${type.name} `);
 
 				if (i == allMatches.length - 1) {
 					setTimeout(() => {
 						$("#tStarted").hide("slow");
 						$("#tEnded").show("slow");
 						$("#stats").show("slow");
+						$(".showGraphicalPlayOff").show("slow");
 						Statistics.allTeams();
 						Statistics.generateMedalTally();
 					}, 1000);
@@ -424,18 +420,17 @@ const PlayMethods = {
 			}
 		});
 
-		let roundWinners = winners.map((w, i) => ({ 
-			id: i, 
-			name: w.name, 
-			points: w.points, 
-			history: w.history, 
+		let roundWinners = winners.map((w, i) => ({
+			id: i,
+			name: w.name,
+			points: w.points,
+			history: w.history,
 			sex: w.sex,
-			teamName: w.teamName, 
-			playerId: w.playerId 
+			teamName: w.teamName,
+			playerId: w.playerId
 		}))
 			.sort((x, y) => y.points - x.points)
 			.filter((f, i) => i < stage.limit);
-			console.log(roundWinners)
 		matchType[stageKey]['winners'] = roundWinners
 		if (stageKey !== 'FF') {
 			ScheduleMethods.generateScheduleForSingles(roundWinners, keyName)
@@ -449,8 +444,6 @@ const PlayMethods = {
 			allPlayers = allPlayers.concat(team[keyName]);
 		});
 
-
-		// console.log('allPlayers: ', allPlayers, type, keyName, allSchedule);
 		let matchType = getMatchType(type, schedule);
 		let matches = matchType[stageKey].matches, winners = [];
 		let stage = config.stages.find(s => s.key == stageKey);
@@ -461,7 +454,6 @@ const PlayMethods = {
 
 			let pW = 'p' + (winIndex + 1), pL = 'p' + (loseIndex + 1);
 			let initialWinner = match[pW];
-			// console.log(' pw: ', pW, 'pL: ', pL, ' match[pW]: ', match[pW], ' match[pL]: ', match[pL]);
 
 			if (!match.won) {
 				match.won = match[pW];
@@ -519,13 +511,8 @@ const PlayMethods = {
 		}))
 			.sort((x, y) => y.points - x.points)
 			.filter((f, i) => i < stage.limit);
-			// .filter(f => f.id < stage.limit);
 
-		// console.log(' roundWinners: ', roundWinners);
 		matchType[stageKey]['winners'] = roundWinners;
-		// console.log('Match Type: ', matchType, matchType[stageKey]);
-
-		//console.log('All Schedule after ', stageKey, schedule, teamsX);
 		if (stageKey !== 'FF') {
 			ScheduleMethods.generateScheduleForDoubles(roundWinners, keyName)
 		}
@@ -541,7 +528,7 @@ const Statistics = {
 			// pieStartAngle: 135,
 			tooltip: { text: 'value' },
 			is3D: true,
-			colors: ["#ffdc73", "#ffcf40",  "#ffbf00", "#bf9b30", "#a67c00", "#FFDC73", "#FFCF40", "#FFBF00", "#BF9B30", "#A67C00"],
+			colors: ["#ffdc73", "#ffcf40", "#ffbf00", "#bf9b30", "#a67c00", "#FFDC73", "#FFCF40", "#FFBF00", "#BF9B30", "#A67C00"],
 			legend: {
 				width: "10%",
 				alignment: "center",
@@ -613,7 +600,7 @@ const Statistics = {
 				textStyle: { color: 'whitesmoke', fontName: 'Play', fontSize: '16px' }
 			},
 			fontName: 'Play', fontSize: '16px',
-			chartArea: { height: '90%', width: '90%'}
+			chartArea: { height: '90%', width: '90%' }
 		};
 
 		// var chart1 = new google.charts.Bar(document.getElementById('myBarChart'));
@@ -636,7 +623,6 @@ const Statistics = {
 		let finals = schedule[key]["FF"];
 		if (finals) {
 			let final = finals.matches[0];
-			//console.log('final: ', final);
 			let winner = final.won;
 			let winTeam = final.won == final.p1 ? final.t1 : final.t2;
 			let loseTeam = final.won == final.p1 ? final.t2 : final.t1;
@@ -654,11 +640,222 @@ const Statistics = {
 		$("#medalListInfo").show();
 
 		for (const mt in schedule) {
-			//console.log(mt);
 			$(`#${mt}Medals`).append(Statistics.createWinnerAndRunnerUpRow(mt))
 		}
+	}
+}
+
+const PlayOffMethods = {
+	finalPlayOffs: function finalPlayOffs(type) {
+		let matchType = getMatchType(type, schedule);
+
+		let orderedStages = []; // Getting all the stages in ordered fashion for the passed type.
+		for (const key in matchType) {
+			if (key !== 'RR')
+				orderedStages[matchType[key].order - 1] = { [key]: matchType[key].matches };
+		}
+		orderedStages.push({
+			WW: [...matchType['FF'].matches]
+		});
+
+		orderedStages = orderedStages.filter(x => x);
+
+		// orderedStages = [
+		// 	{ "QF": [{ "p1": "rene anderson", "p2": "darren wade", "won": "darren wade", "t1": "Team 4", "t2": "Team 2", "p1Score": 3, "p2Score": 6, "matchIndex": 4 }, { "p1": "matt cox", "p2": "francisco gonzales", "won": "francisco gonzales", "t1": "Team 3", "t2": "Team 1", "p1Score": 5, "p2Score": 6, "matchIndex": 5 }, { "p1": "cecil bowman", "p2": "zander adams", "won": "cecil bowman", "t1": "Team 3", "t2": "Team 1", "p1Score": 6, "p2Score": 0, "matchIndex": 6 }] },
+		// 	{
+		// 		"SF": [
+		// 			{ "p1": "bye", "p2": "darren wade", "won": "darren wade", "t1": "--", "t2": "Team 2", "p1Score": 1, "p2Score": 6, "matchIndex": 2 },
+		// 			{ "p1": "francisco gonzales", "p2": "cecil bowman", "won": "cecil bowman", "t1": "Team 1", "t2": "Team 3", "p1Score": 3, "p2Score": 6, "matchIndex": 3 }]
+		// 	},
+		// 	{ "FF": [{ "p1": "darren wade", "p2": "cecil bowman", "won": "darren wade", "t1": "Team 2", "t2": "Team 3", "p1Score": 6, "p2Score": 5, "matchIndex": 1 }] }, { "WW": [{ "p1": "darren wade", "p2": "cecil bowman", "won": "darren wade", "t1": "Team 2", "t2": "Team 3", "p1Score": 6, "p2Score": 5, "matchIndex": 1 }] }]
+		let rounds = [];
+		let counter = 1;
+
+		for (let j = orderedStages.length - 1; j >= 0; j--) {
+			const stage = orderedStages[j];
+			const stageCode = Object.keys(stage)[0]; // Getting the stage Name like - RR, QF, SF, FF
+			const stageName = getStageNameFromCode(stageCode); // Getting full Name of the stage from code.
+			const stageValues = stage[stageCode];
+
+			rounds.unshift({ stageCode, stageName });
+
+			if (j - 1 >= 0) {
+				let prevStage = orderedStages[j - 1];
+				let prevStageCode = Object.keys(prevStage)[0];
+				let prevStageValues = prevStage[prevStageCode].sort((a, b) => a.matchIndex - b.matchIndex);
+
+				for (let i = 0; i < prevStageValues.length; i++) {
+					const prevMatch = prevStageValues[i];
+					if (!prevMatch.matchIndex || prevMatch.matchIndex == undefined) {
+						prevMatch['matchIndex'] = counter++;
+					}
+
+					// check player 1 in prev to prev stage. 
+					let gSonStage = orderedStages[j - 2];
+					if (gSonStage) {
+						let gSonStageCode = Object.keys(gSonStage)[0];
+						let gSonStageValues = gSonStage[gSonStageCode];
 
 
-		//console.log('schedule: ', schedule);
+						let p1GSon = gSonStageValues.filter(g => g.p1 == prevMatch.p1 || g.p2 == prevMatch.p1)[0];
+						let p2GSon = gSonStageValues.filter(g => g.p1 == prevMatch.p2 || g.p2 == prevMatch.p2)[0];
+
+						if (prevMatch.p1 !== 'bye') {
+							p1GSon.matchIndex = counter++;
+						}
+
+						if (prevMatch.p2 !== 'bye') {
+							p2GSon.matchIndex = counter++;
+						}
+					}
+				}
+			}
+		}
+
+		let matchName = getMatchTypeName(type);
+		$("#ctmTitlePlayOff").html(`View Play-Offs >> ${matchName}`)
+		PlayOffMethods.graphPlayOffs(orderedStages);
+	},
+
+	graphPlayOffs: function graphPlayOffs(orderedStages) {
+		let finalHtml = `<div class="container">`; // Creating the main container
+
+		// Looping through the ordered stages. 
+		let headSection = `<div class="row headings" >`;
+		let colsSection = `<div class="row">`
+		let stageChangesDone = false;
+		for (let i = 0; i < orderedStages.length; i++) {
+			const stage = orderedStages[i];
+			const stageCode = Object.keys(stage)[0]; // Getting the stage Name like - RR, QF, SF, FF
+			const stageName = getStageNameFromCode(stageCode); // Getting full Name of the stage from code.
+			const stageValues = stage[stageCode]; // Getting the match values for respective stages.
+
+			if (stageCode == 'QF' && stageValues.length < 4 && !stageChangesDone) {
+				stageChangesDone = true;
+				let currStageValueLength = stageValues.length;
+				for (let m = currStageValueLength; m < 4; m++) {
+					const ns = orderedStages[i + 1];
+					const nsCode = Object.keys(ns)[0]; // Getting the stage Name like - RR, QF, SF, FF
+					const nsValues = ns[nsCode]; // Getting the match values for respective stages.
+					const nsPlayers = [];
+					nsValues.forEach(s => {
+						nsPlayers.push(s.p1);
+						nsPlayers.push(s.p2);
+					});
+
+					let byeIndex = nsPlayers.findIndex(x => x == 'bye');
+					stageValues.splice(byeIndex, 0, { p1: "", p2: "" });
+				}
+			}
+
+			// Create Heading section, with a separator.
+			headSection += `<div class="col text-center">${stageName}</div>`;
+
+			// Create Columns Section. Further loop on the values and append data to it.
+			colsSection += `
+				<div class="col container">
+				<div class="row canvasHeight">
+			`;
+
+			let playerSection = `<div class="col-sm-8 poCol">`, leftLinks = '', rightLinks = '';
+			let prevValuesDone = false;
+			for (let j = 0; j < stageValues.length; j++) {
+				const match = stageValues[j];
+
+				if (i == 0) {
+					// First Stage 
+					if (j == 0) {
+						rightLinks += `<div class="col-sm-4 poCol">`
+					}
+
+					if (match.p1 == "" || match.p2 == "") {
+						playerSection += `<div class="neutralPlayer">${match.p1}</div><div class="neutralPlayer">${match.p2}</div>`;
+						rightLinks += `<div class="${stageCode}"></div>`
+					} else {
+						playerSection += `<div class="player">${match.p1}</div><div class="player">${match.p2}</div>`;
+						rightLinks += `<div class="${stageCode} rightLink"></div>`
+					}
+
+
+					if (j == stageValues.length - 1) {
+						playerSection += `</div>`;
+						rightLinks += `</div>`;
+					}
+
+				} else if (i == orderedStages.length - 1) {
+					// Last Stage 
+					const prevStage = orderedStages[i - 1];
+					const prevStageCode = Object.keys(prevStage)[0]; // Getting the stage Name like - RR, QF, SF, FF
+					const prevStageValues = prevStage[prevStageCode];
+					const prevWinners = prevStageValues.map(m => (m.won));
+
+					if (j == 0) {
+						leftLinks += `<div class="col-sm-4 poCol">`
+					}
+					playerSection += `<div class="player">${prevWinners[0]}</div>`;
+					leftLinks += `<div class="leftLink"></div>`
+
+					if (j == stageValues.length - 1) {
+						playerSection += `</div>`;
+						leftLinks += `</div>`;
+					}
+
+				} else {
+					// All other intermediate stages
+					const prevStage = orderedStages[i - 1];
+					const prevStageCode = Object.keys(prevStage)[0];
+					const prevStageValues = prevStage[prevStageCode];
+					// const prevWinners = prevStageValues.map(m => (m.won || "bye-bye"));
+					const prevWinners = [];
+					stageValues.forEach(s => {
+						prevWinners.push(s.p1);
+						prevWinners.push(s.p2);
+					})
+
+					const nextStage = orderedStages[i + 1];
+					const nextStageCode = Object.keys(nextStage)[0];
+					const nextStageValues = nextStage[nextStageCode];
+
+					if (j == 0) {
+						leftLinks += `<div class="col-sm-2 poCol">`
+						rightLinks += `<div class="col-sm-2 poCol">`
+					}
+
+					if (!prevValuesDone) {
+						for (let k = 0; k < prevWinners.length; k++) {
+							prevValuesDone = true;
+							const element = prevWinners[k];
+
+							if (prevWinners[k] == "bye") {
+								leftLinks += `<div class="neutralLeftLink"></div>`
+							} else {
+								leftLinks += `<div class="leftLink"></div>`
+							}
+
+
+							playerSection += `<div class="player">${prevWinners[k]}</div>`;
+						}
+					}
+
+					for (let k = 0; k < nextStageValues.length; k++) {
+						rightLinks += `<div class="${stageCode} rightLink"></div>`;
+					}
+
+					if (j == stageValues.length - 1) {
+						playerSection += `</div>`;
+						leftLinks += `</div>`;
+						rightLinks += `</div>`;
+					}
+				}
+			}
+
+			colsSection += `${leftLinks}${playerSection}${rightLinks}`;
+			colsSection += `</div></div>`
+		}
+
+		headSection += `</div><h5 class="tourMenuWhite"><hr /></h5><div class="row rowSeparator"></div>`
+		colsSection += `</div>`
+		finalHtml += `${headSection}${colsSection}</div>`;
+		$('#stages').html(finalHtml);
 	}
 }

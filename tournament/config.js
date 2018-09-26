@@ -85,3 +85,20 @@ function getMatchType(type, allSchedule) {
   return allSchedule[matchType];
 }
 
+function getMatchTypeName(type) {
+  let matchType = '';
+  if (type == 'M') {
+    matchType = 'Men Singles';
+  } else if(type == 'F') {
+    matchType = 'Women Singles';
+  } else if(type == 'DM') {
+    matchType = 'Men Doubles';
+  } else if(type == 'DF') {
+    matchType = 'Women Doubles';
+  } else if (type == 'MD') {
+    matchType = 'Mix Doubles';
+  }
+
+  return matchType;
+}
+
