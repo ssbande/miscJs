@@ -1,10 +1,10 @@
 let teamsX = [];
 let playerCount = 0;
 $(document).ready(() => {
-  google.charts.load('current', { packages: ['corechart','bar'] });
+  google.charts.load('current', { packages: ['corechart', 'bar'] });
   $("#tournamentName").html(config.tournamentName);
   $("#tourName1").html(config.tournamentName);
-  
+
   $("#tStarted").hide();
   $("#tEnded").hide();
   $("#tNotStarted").show();
@@ -19,7 +19,7 @@ $(document).ready(() => {
   $("#statsListEmptyInfo").show();
   $("#medalListEmptyInfo").show();
   $("#playOffsEmptyInfo").show();
-  
+
   $("#runAllMatches").show();
   $("#tourProgress").hide();
   $("#stats").hide();
@@ -252,7 +252,7 @@ function createRandomTeams(e) {
         teamInfo.forEach(team => {
           for (let i = 0; i < team.reqPlayers; i++) {
             let dp = data.results.shift();
-            let p = { id: i, name: `${dp.name.first} ${dp.name.last}`, sex: dp.gender == 'male' ? 'M' : 'F', history: [], points: 0, teamName: team.team};
+            let p = { id: i, name: `${dp.name.first} ${dp.name.last}`, sex: dp.gender == 'male' ? 'M' : 'F', history: [], points: 0, teamName: team.team };
             team.players.push(p);
           }
           TeamMethods.createDoubles(team);
@@ -260,7 +260,7 @@ function createRandomTeams(e) {
         });
 
         teamsX = teamInfo;
-        localStorage.setItem('teams', JSON.stringify(teamsX));
+        // localStorage.setItem('teams', JSON.stringify(teamsX));
         $("#teamNos").html(noOfTeams);
         $('#successrandomTeam').css("display", 'block');
         $('#rTeamModalDialog').hide();
@@ -273,13 +273,19 @@ function createRandomTeams(e) {
       }, 1000);
     },
     error: function (jqXHR, textStatus, errorThrown) {
-      if (localStorage.getItem('teams')) {
-        teamsX = JSON.parse(localStorage.getItem('teams'));
-      } else {
-        $("#cancelCreateRandomTeams").show();
-        $("#createTeamsBtn").html(`Create Teams`);
-        $("#randomTeamError").html("Some error occurred. Try again to create the teams.")
-      }
+      console.log(jqXHR, textStatus, errorThrown);
+      $("#cancelCreateRandomTeams").show();
+      $("#createTeamsBtn").html(`Create Teams`);
+      $("#randomTeamError").html("Some error occurred. Try again to create the teams.")
+      $("#randomTeamError").show();
+      // if (localStorage.getItem('teams')) {
+      //   teamsX = JSON.parse(localStorage.getItem('teams'));
+      // } else {
+      //   $("#cancelCreateRandomTeams").show();
+      //   $("#createTeamsBtn").html(`Create Teams`);
+      //   $("#randomTeamError").html("Some error occurred. Try again to create the teams.")
+      //   $("#randomTeamError").show();
+      // }
     }
   });
 }
