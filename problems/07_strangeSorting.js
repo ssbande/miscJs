@@ -36,50 +36,18 @@ var inputs = [
 ]
 
 const strangeSort = (nums, mapping) => {
-  console.log('nums: ', nums, ' mapping: ', mapping);
-  let numMap = new Map();
-  let reMap = new Map();
-  let tempArr = [];
-  for (let i = 0; i < mapping.length; i++) {
-    numMap.set(String(mapping[i]), i);
+  const mapper = {}, values = {}, result = [];
+  mapping.forEach((m, i) => mapper[m] = String(i));
+  for (const num of nums) {
+    const converted = Number([...num].reduce((p, c, i) => (i === 0 ? '' : p) + mapper[c], [...num][0]))
+    values[converted] = !values[converted] ? [num] : [...values[converted], num];
   }
-  console.log('numMap: ', numMap);
-  for (let num of nums) {
-    console.log('num: ', num);
-    let temp = convert(numMap, num);
-    console.log(' temp: ', temp)
-    if (!reMap.has(temp)) {
-      reMap.set(temp, []);
-    }
-    reMap.get(temp).push(num);
-    tempArr.push(temp);
-  }
-  console.log('reMap: ', reMap);
-  console.log('tempArr: ', tempArr);
 
-  tempArr.sort((a, b) => a - b);
-
-  console.log('tempArr sorted: ', tempArr);
-  let result = [];
-  for (let value of tempArr) {
-    console.log('value: ', value, ' remapvalue: ', reMap.get(value))
-    if (reMap.get(value)) {
-      result = [...result, ...reMap.get(value)];
-      reMap.delete(value);
-    }
-  }
+  // As properties of an object will be traversed in ascending order for integer indices.
+  // We dont have to sort. 
+  for (const v in values) { result.push(...values[v]) }
   return result;
 }
-
-const convert = (map, str) => {
-  let temp = '';
-  for(let i = 0; i < str.length; i++) {
-      temp += map.get(str[i]);
-  }
-  console.log(temp);
-  return Number(temp);
-};
-
 
 var resultArray = [];
 inputs.forEach((element, i) => {
